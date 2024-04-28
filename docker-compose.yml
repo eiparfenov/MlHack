@@ -1,0 +1,30 @@
+version: '3'
+
+services: 
+  
+  backend:
+    image: 'eiparfenov/ml_hack:latest'
+    ports:
+      - '5244:8080'
+    environment:
+      - ConnectionStrings__PostgresDb=Host=db;Port=5432;Database=ml_hack;Username=postgres;Password=password
+      - ConnectionStrings__NluService=https://2c87-46-138-167-166.ngrok-free.app/compute_metrics
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbit
+    networks:
+      - main-network 
+  
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5431:5432'
+    networks:
+      - main-network
+  rabbit:
+    image: rabbitmq:3
+    networks:
+      - main-network
+
+networks:
+  main-network: {}

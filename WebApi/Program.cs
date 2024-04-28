@@ -30,7 +30,11 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddMassTransit(o =>
 {
-    o.UsingInMemory((context, configurator) => configurator.ConfigureEndpoints(context));
+    o.UsingRabbitMq(((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
+        cfg.ConfigureEndpoints(context, new SnakeCaseEndpointNameFormatter(true));
+    }));
     o.AddConsumer<PerformNluAnswerConsumer>(c =>
     {
         c.UseMessageRetry(
